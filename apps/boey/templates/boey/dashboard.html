@@ -1,0 +1,40 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Boey Dashboard{% endblock %}
+
+{% block content %}
+<h1>Latest Sensor Readings</h1>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Timestamp</th>
+        <th>Sensor ID</th>
+        <th>pH</th>
+        <th>Turbidity (NTU)</th>
+        <th>DO (mg/L)</th>
+        <th>EC (µS/cm)</th>
+        <th>Temp (°C)</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for r in readings %}
+        <tr>
+            <td>{{ r.timestamp }}</td>
+            <td>{{ r.sensor_id }}</td>
+            <td>{{ r.ph }}</td>
+            <td>{{ r.turbidity_ntu }}</td>
+            <td>{{ r.do_mg_l }}</td>
+            <td>{{ r.ec_us_cm }}</td>
+            <td>{{ r.temperature_c }}</td>
+            <td>{{ r.latitude }}</td>
+            <td>{{ r.longitude }}</td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="9">No readings yet.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
