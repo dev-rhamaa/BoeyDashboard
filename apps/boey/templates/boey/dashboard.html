@@ -1,8 +1,39 @@
-{% extends "admin/base_site.html" %}
+{% extends "base.html" %}
 {% block title %}Boey Dashboard{% endblock %}
 
 {% block content %}
-<h1>Latest Sensor Readings</h1>
+<h1 class="mb-4">Dashboard Analytics</h1>
+
+<!-- Summary cards for latest reading -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3 mb-md-0">
+        <div class="hero-card bg-ph text-center">
+            <h5 class="mb-1">pH</h5>
+            <h2 class="mb-0">{{ summary.ph|default:"-" }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3 mb-md-0">
+        <div class="hero-card bg-turbidity text-center">
+            <h5 class="mb-1">Turbidity (NTU)</h5>
+            <h2 class="mb-0">{{ summary.turbidity_ntu|default:"-" }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="hero-card bg-temp text-center">
+            <h5 class="mb-1">Temperature (°C)</h5>
+            <h2 class="mb-0">{{ summary.temperature_c|default:"-" }}</h2>
+        </div>
+    </div>
+</div>
+
+<!-- Trend chart -->
+<div class="card mb-4">
+    <div class="card-body">
+        <canvas id="trendChart" height="120"></canvas>
+    </div>
+</div>
+
+<h2>Latest Sensor Readings</h2>
 <table class="table table-striped">
     <thead>
     <tr>
@@ -37,4 +68,65 @@
     {% endfor %}
     </tbody>
 </table>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const labels = {{ labels|safe }};
+const phData = {{ ph_data|safe }};
+const turbData = {{ turbidity_data|safe }};
+const tempData = {{ temp_data|safe }};
+
+if (labels && labels.length) {
+  const ctx = document.getElementById('trendChart');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'pH',
+          data: phData,
+          borderColor: '#0d6efd',
+          backgroundColor: 'rgba(13,110,253,0.2)',
+          tension: 0.3,
+        },
+        {
+          label: 'Turbidity (NTU)',
+          data: turbData,
+          borderColor: '#6f42c1',
+          backgroundColor: 'rgba(111,66,193,0.2)',
+          tension: 0.3,
+        },
+        {
+          label: 'Temp (°C)',
+          data: tempData,
+          borderColor: '#198754',
+          backgroundColor: 'rgba(25,135,84,0.2)',
+          tension: 0.3,
+        },
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      responsive: true,
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: false,
+        },
+      },
+    },
+  });
+}
+</script>
 {% endblock %}
