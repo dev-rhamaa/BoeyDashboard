@@ -11,9 +11,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Load environment variables from .env at project root
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +29,7 @@ SECRET_KEY = 'django-insecure-7u5*-1zhi*d#l7%@qpq8r4qucxg&g+c0t62nlr56fcokus9ryq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []  # Add hosts/domain names as needed
 
 
 # Application definition
@@ -39,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # My apps
+    'apps.boey',
+    'apps.mqtt_worker',
     
 ]
 
@@ -118,6 +124,24 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# --------------------------------------------------------------------
+# MQTT configuration
+# --------------------------------------------------------------------
+MQTT_BROKER_ADDRESS = os.getenv('MQTT_BROKER_ADDRESS', 'localhost')
+MQTT_PORT = int(os.getenv('MQTT_PORT', 1883))
+MQTT_TOPIC = os.getenv('MQTT_TOPIC', 'test/topic')
+MQTT_CLIENT_ID = os.getenv('MQTT_CLIENT_ID', 'django-mqtt-client')
+
+# --------------------------------------------------------------------
+# Celery configuration
+# --------------------------------------------------------------------
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', CELERY_BROKER_URL)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
